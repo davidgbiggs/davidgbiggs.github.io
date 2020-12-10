@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{QeBL:function(e,n,t){"use strict";t.r(n);t("q1tI");var l=t("NqE+"),u=t("TBFr"),c=t("+ego"),a=t("qKvR");n.default=function(){return Object(a.d)(c.a,null,Object(a.d)(l.a,null,Object(a.d)(u.a,null,Object(a.d)("h1",null,"Home Page"),Object(a.d)("p",null,"Marketing info here!"))))}}}]);
+//# sourceMappingURL=component---src-pages-index-tsx-138228b17086c31d390c.js.map
