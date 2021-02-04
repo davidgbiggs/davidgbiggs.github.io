@@ -18,7 +18,7 @@ const Button: React.FC<ButtonProps> = ({ onClick, children, isLoading, type, blo
           <div className="spinner-border spinner-border-sm text-light" role="status">
             <span className="sr-only">Loading...</span>
           </div>
-          <span>&nbsp;Loading...</span>
+          <span>&nbsp;&nbsp;Loading...</span>
         </>
       ) : (
         `${children}`

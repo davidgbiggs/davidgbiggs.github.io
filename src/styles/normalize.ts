@@ -29,7 +29,7 @@ export default `
   }
 
   a {
-    color: ${colors.brand};
+    // color: ${colors.brand};
     text-decoration: none;
 
     &:hover,
@@ -50,6 +50,12 @@ export default `
 
   figcaption {
     font-size: 80%;
+  }
+
+  .toast {
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 
   table {

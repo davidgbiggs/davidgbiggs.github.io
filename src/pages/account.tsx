@@ -6,11 +6,18 @@ import { navigate } from 'gatsby'
 import { loadStripe } from '@stripe/stripe-js'
 import styled from '@emotion/styled'
 import moment from 'moment'
+import Skeleton from 'react-loading-skeleton'
+import * as bootstrap from 'bootstrap'
 import Page from '../components/Page'
 import Container from '../components/Container'
 import Button from '../components/Button'
 import IndexLayout from '../layouts'
 import { FirebaseContext, isBrowser } from '../../FirebaseProvider'
+
+const toastElList = [].slice.call(document.querySelectorAll('.toast'))
+const toastList = toastElList.map(function(toastEl) {
+  return new bootstrap.Toast(toastEl)
+})
 
 const MembershipBox = styled.div`
   // border: 1px solid gray;
@@ -25,21 +32,39 @@ const Separator = styled.div`
   text-align: center;
 `
 
+const InfoBox = styled.div`
+  // background-color: hsla(195, 100%, 50%, 0.2);
+  border: 0px solid hsla(200, 100%, 50%, 1);
+  padding: 10px;
+  // margin: 10px;
+  border-radius: 5px;
+  align-text: center;
+`
+
+const LegalReviewButton = styled.button`
+  margin-top: 10px;
+`
+
+// if (window.location.hostname === 'localhost') {
+//   isBrowser() && firebase.functions().useEmulator('localhost', 5001)
+// }
+
 function AccountPage() {
   const firebaseContext = useContext(FirebaseContext)
   const { uid, subscription } = firebaseContext
   const [isLoading, setIsLoading] = useState(false)
+  const [loadingReview, setLoadingReview] = useState(false)
   const [db, setDb] = useState(null)
 
   useEffect(() => {
-    if (window) {
+    if (isBrowser()) {
       setDb(firebase.firestore())
     }
   })
 
   useEffect(() => {
     setIsLoading(false)
-  }, [subscription.cancel_at_period_end])
+  }, [subscription])
 
   if (uid === null) {
     navigate('../login')
@@ -61,6 +86,23 @@ function AccountPage() {
       //   // window.location.reload()
       //   // setIsLoading(false)
       // }, 3000)
+    }
+  }
+
+  function showToast() {
+    toastList[0].show()
+  }
+
+  const buyLegalReviewRef = isBrowser() && firebase.functions().httpsCallable('buyLegalReview')
+  async function buyLegalReview() {
+    setLoadingReview(true)
+    try {
+      await buyLegalReviewRef({})
+      showToast()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoadingReview(false)
     }
   }
 
@@ -106,15 +148,39 @@ function AccountPage() {
     if (!currentSubscription) {
       return (
         <MembershipBox>
-          <Button isLoading={isLoading} type="button" onClick={sendToCheckout}>
-            Subscribe
-          </Button>
-          <p>No Subscription to show</p>
+          <div>
+            <div className="font-weight-bold">
+              <span>Standard Subscription: $13.99/mo.</span>
+            </div>
+            <div className="d-flex justify-content-between align-items-center">
+              <span>No subscription to show</span>
+              <Button isLoading={isLoading} type="button" onClick={sendToCheckout}>
+                Subscribe Now
+              </Button>
+            </div>
+          </div>
         </MembershipBox>
       )
     }
     if (currentSubscription === 'unset') {
-      return <span>loading... </span>
+      // if (bool) {
+      return (
+        <MembershipBox>
+          <div>
+            <div className="font-weight-bold">
+              <span>
+                <Skeleton width={250} />
+              </span>
+            </div>
+            <div className="d-flex justify-content-between align-items-center">
+              <span>
+                <Skeleton width={100} />
+              </span>
+              <Skeleton width={90} height={34} />
+            </div>
+          </div>
+        </MembershipBox>
+      )
     }
     if (currentSubscription.status === 'active') {
       const { stripeLink } = currentSubscription
@@ -129,7 +195,7 @@ function AccountPage() {
                 <span>Standard Subscription: $13.99/mo. (set to expire)</span>
               </div>
               <div className="d-flex justify-content-between align-items-center">
-                <span>Subscription Ending On: {moment(currentSubscription.current_period_end?.toDate()).format('MMM Do, YYYY')}</span>
+                <span>Subscription ending on: {moment(currentSubscription.current_period_end?.toDate()).format('MMM Do, YYYY')}</span>
                 <Button
                   isLoading={isLoading}
                   type="button"
@@ -189,15 +255,49 @@ function AccountPage() {
         <Container>
           <h6>Legal Review</h6>
           <Separator />
-          <p className="font-weight-bold">What should go here?</p>
-          <ul>
-            <li>What price?</li>
-            <li>Should I just send an email to aaron@elderlawok.com containing their report?</li>
-            <li>How will you notify that their trustee data is valid? Just an email?</li>
-            <li>Should we list their past Legal Review purchases here?</li>
-          </ul>
+          <InfoBox className="d-flex flex-column">
+            <span>
+              We also offer legal review services. A lawyer will review your records for inconsistencies and red flags, so you can have
+              confidence and peace of mind. An invoice will be sent to you and you will be contacted by one of our attorneys upon payment.
+            </span>
+            <LegalReviewButton
+              type="button"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Tooltip on top"
+              onClick={buyLegalReview}
+              className={`btn btn-primary align-self-end ${loadingReview ? ' disabled' : ''}`}
+              id="checkout-button"
+            >
+              {loadingReview ? 'Processing...' : 'Send me payment details'}
+            </LegalReviewButton>
+          </InfoBox>
         </Container>
       </Page>
+      {/* <ToastDiv id="legal-review-toast" className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <ToastHeader className="toast-header">
+          <div>
+            <GreenBox />
+            <ToastTitle>Legal Review</ToastTitle>
+          </div>
+          <button type="button" onClick={dismissToast} className="close btn" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </ToastHeader>
+        <div className="toast-body">
+          Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.
+        </div>
+      </ToastDiv> */}
+      <div className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div className="toast-header">
+          <strong className="me-auto text-success">Legal Review</strong>
+          {/* <small>11 mins ago</small> */}
+          <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close" />
+        </div>
+        <div className="toast-body">
+          Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.
+        </div>
+      </div>
     </IndexLayout>
   )
 }

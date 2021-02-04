@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useState, useEffect } from 'react'
 
 interface Props {
   onSubmit(event: FormEvent<HTMLFormElement>): void
@@ -7,16 +7,28 @@ interface Props {
 }
 
 const BoxForm: React.FC<Props> = ({ children, onSubmit, errorText, className }) => {
+  const [showError, setShowError] = useState(false)
+
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
     onSubmit(event)
   }
 
+  useEffect(() => {
+    if (errorText === 'none') {
+      setShowError(false)
+    } else {
+      setShowError(true)
+    }
+  }, [errorText])
+
   return (
     <form className={`form ${className}`} onSubmit={handleSubmit}>
-      <div className={errorText === 'none' ? 'alert alert-danger d-none' : 'alert alert-danger'} role="alert">
-        {`${errorText}`}
-      </div>
+      {showError ? (
+        <div className="alert alert-danger" role="alert">
+          {`${errorText}`}
+        </div>
+      ) : null}
       {children}
     </form>
   )

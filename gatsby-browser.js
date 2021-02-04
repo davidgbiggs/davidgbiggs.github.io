@@ -5,9 +5,11 @@
  */
 
 // You can delete this file if you're not using it
+import 'jquery/dist/jquery.min'
+import 'popper.js/dist/popper.min'
+import 'bootstrap/dist/js/bootstrap.min'
 import 'firebase/auth'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min'
 
 import FirebaseProvider from './FirebaseProvider'
 

@@ -27,7 +27,19 @@ export const FirebaseProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState('unset')
   const [uid, setUid] = useState('unset')
   const [subscription, setSubscription] = useState('unset')
-  const db = firebase.firestore()
+  const db = isBrowser() ? firebase.firestore() : null
+
+  // useEffect(() => {
+  //   if (window.location.hostname === 'localhost') {
+  //     isBrowser() && db.useEmulator('localhost', 8080)
+  //   }
+  // }, [])
+
+  // useEffect(() => {
+  //   if (window.location.hostname === 'localhost') {
+  //     isBrowser() && firebase.auth().useEmulator('http://localhost:9099/')
+  //   }
+  // }, [])
 
   async function getSubscription(userID) {
     const subscriptionsCollection = await db
@@ -74,22 +86,24 @@ export const FirebaseProvider = ({ children }) => {
   }, [uid])
 
   useEffect(() => {
-    const observer = firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        setIsLoggedIn('yes')
-        setUid(user.uid)
-        getSubscription(user.uid).then(sub => {
-          if (!sub.docs[0]) {
-            setSubscription(null)
+    const observer = isBrowser()
+      ? firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            setIsLoggedIn('yes')
+            setUid(user.uid)
+            getSubscription(user.uid).then(sub => {
+              if (!sub.docs[0]) {
+                setSubscription(null)
+              } else {
+                setSubscription(sub.docs[sub.docs.length - 1].data())
+              }
+            })
           } else {
-            setSubscription(sub.docs[sub.docs.length - 1].data())
+            setIsLoggedIn('no')
+            setUid(null)
           }
         })
-      } else {
-        setIsLoggedIn('no')
-        setUid(null)
-      }
-    })
+      : () => {}
     return observer
   }, [])
   return <FirebaseContext.Provider value={{ isLoggedIn, uid, subscription }}>{children}</FirebaseContext.Provider>
