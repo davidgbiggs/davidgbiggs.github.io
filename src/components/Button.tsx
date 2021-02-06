@@ -7,16 +7,14 @@ interface ButtonProps {
   block?: boolean
 }
 
-const Button: React.FC<ButtonProps> = ({ onClick, children, isLoading, type, block }) => {
-  const blockValue: string = block ? 'btn-block' : ''
-
+const Button: React.FC<ButtonProps> = ({ onClick, children, isLoading, type }) => {
   return (
     // eslint-disable-next-line react/button-has-type
-    <button disabled={isLoading} onClick={onClick} type={type} className={`btn btn-primary ${blockValue}`}>
+    <button disabled={isLoading} onClick={onClick} type={type} className="btn btn-primary">
       {isLoading ? (
         <>
-          <div className="spinner-border spinner-border-sm text-light" role="status">
-            <span className="sr-only">Loading...</span>
+          <div className="spinner-border spinner-border-sm" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
           <span>&nbsp;&nbsp;Loading...</span>
         </>

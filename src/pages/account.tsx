@@ -7,17 +7,13 @@ import { loadStripe } from '@stripe/stripe-js'
 import styled from '@emotion/styled'
 import moment from 'moment'
 import Skeleton from 'react-loading-skeleton'
-import * as bootstrap from 'bootstrap'
+import { ToastContainer, toast } from 'react-toastify'
 import Page from '../components/Page'
 import Container from '../components/Container'
 import Button from '../components/Button'
 import IndexLayout from '../layouts'
 import { FirebaseContext, isBrowser } from '../../FirebaseProvider'
-
-const toastElList = [].slice.call(document.querySelectorAll('.toast'))
-const toastList = toastElList.map(function(toastEl) {
-  return new bootstrap.Toast(toastEl)
-})
+import 'react-toastify/dist/ReactToastify.css'
 
 const MembershipBox = styled.div`
   // border: 1px solid gray;
@@ -89,8 +85,11 @@ function AccountPage() {
     }
   }
 
+  const notify = () =>
+    toast.success('Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.')
+
   function showToast() {
-    toastList[0].show()
+    notify()
   }
 
   const buyLegalReviewRef = isBrowser() && firebase.functions().httpsCallable('buyLegalReview')
@@ -150,7 +149,7 @@ function AccountPage() {
         <MembershipBox>
           <div>
             <div className="font-weight-bold">
-              <span>Standard Subscription: $13.99/mo.</span>
+              <span>Standard Subscription: $3.99/mo.</span>
             </div>
             <div className="d-flex justify-content-between align-items-center">
               <span>No subscription to show</span>
@@ -288,16 +287,16 @@ function AccountPage() {
           Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.
         </div>
       </ToastDiv> */}
-      <div className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      {/* <div className="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div className="toast-header">
           <strong className="me-auto text-success">Legal Review</strong>
-          {/* <small>11 mins ago</small> */}
           <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close" />
         </div>
         <div className="toast-body">
           Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.
         </div>
-      </div>
+      </div> */}
+      <ToastContainer autoClose={10000} position="bottom-right" />
     </IndexLayout>
   )
 }

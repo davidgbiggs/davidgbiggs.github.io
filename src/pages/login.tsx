@@ -81,39 +81,47 @@ function LoginPage() {
           <Container>
             <LoginForm onSubmit={handleFormSubmit} errorText={errorText}>
               <div className="form-group">
-                <label htmlFor="login-email">Email</label>
+                <label className="mb-2" htmlFor="login-email">
+                  Email
+                </label>
                 <input
                   placeholder="Your Email"
                   disabled={isLoading}
                   type="email"
                   onChange={handleEmailChange}
-                  className="form-control"
+                  className="form-control mb-3"
                   id="login-email"
                   aria-describedby="emailHelp"
                   value={email}
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="login-password">Password</label>
+                <label className="mb-2" htmlFor="login-password">
+                  Password
+                </label>
                 <input
                   placeholder="Password"
                   value={password}
                   disabled={isLoading}
                   type="password"
                   onChange={handlePasswordChange}
-                  className="form-control"
+                  className="form-control mb-3"
                   id="login-password"
                 />
               </div>
-              <Button type="submit" isLoading={isLoading} block>
-                Submit
-              </Button>
+              <div className="d-grid gap-1 mt-2">
+                <Button type="submit" isLoading={isLoading} block>
+                  Submit
+                </Button>
+              </div>
               <LoginSeparator>
                 <TextInSeparator>or</TextInSeparator>
               </LoginSeparator>
-              <button onClick={() => navigate('/sign-up/')} type="submit" className="btn btn-light btn-block">
-                Sign Up
-              </button>
+              <div className="d-grid gap-1 mt-1">
+                <button onClick={() => navigate('/sign-up/')} type="submit" className="btn btn-light btn-block">
+                  Sign Up
+                </button>
+              </div>
             </LoginForm>
           </Container>
         </Page>

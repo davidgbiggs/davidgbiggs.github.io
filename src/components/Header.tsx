@@ -129,8 +129,7 @@ const NavAction: React.FC<NavActionProps> = ({ isLoggedIn }) => {
         <button
           type="button"
           className="btn btn-primary dropdown-toggle dropdown-toggle-split"
-          data-toggle="dropdown"
-          aria-haspopup="true"
+          data-bs-toggle="dropdown"
           aria-expanded="false"
         >
           <span className="sr-only" />
