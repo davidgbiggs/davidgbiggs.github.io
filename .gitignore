@@ -2,6 +2,9 @@
 # Node.js-Specific Ignores
 # =========================
 
+# IDE
+.vscode
+
 # Build directory
 public/
 

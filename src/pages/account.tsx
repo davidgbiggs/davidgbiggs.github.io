@@ -66,16 +66,23 @@ function AccountPage() {
     navigate('../login')
   }
 
-  console.log('subscription', subscription)
-  console.log('uid', uid)
+  const notify = (success: boolean, message: string) => {
+    if (success) {
+      toast.success(message)
+    } else {
+      toast.error(message)
+    }
+  }
 
   const toggleCanceledRef = isBrowser() && firebase.functions().httpsCallable('toggleCanceled')
   async function toggleCanceled(subscriptionId: string, cancel_at_period_end: boolean) {
     setIsLoading(true)
     try {
       await toggleCanceledRef({ subscriptionId, cancel_at_period_end })
+      notify(true, 'Success! Your subscription has been modified.')
     } catch (error) {
       console.error(error)
+      notify(false, 'There was an error modifying your subscription.')
     } finally {
       // window.location.reload()
       // setTimeout(() => {
@@ -85,19 +92,12 @@ function AccountPage() {
     }
   }
 
-  const notify = () =>
-    toast.success('Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.')
-
-  function showToast() {
-    notify()
-  }
-
   const buyLegalReviewRef = isBrowser() && firebase.functions().httpsCallable('buyLegalReview')
   async function buyLegalReview() {
     setLoadingReview(true)
     try {
       await buyLegalReviewRef({})
-      showToast()
+      notify(true, 'Success! You have not yet been charged. Please pay the invoice sent to your email to begin the review process.')
     } catch (error) {
       console.error(error)
     } finally {
@@ -149,7 +149,7 @@ function AccountPage() {
         <MembershipBox>
           <div>
             <div className="font-weight-bold">
-              <span>Standard Subscription: $3.99/mo.</span>
+              <span>Standard Subscription: $13.99/mo.</span>
             </div>
             <div className="d-flex justify-content-between align-items-center">
               <span>No subscription to show</span>
